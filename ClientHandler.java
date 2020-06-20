@@ -106,6 +106,7 @@ public class ClientHandler {
 				try {
 					
 					if (sendQueue.isEmpty()) {
+						
 						synchronized(DataHandler.syncObj) {
 							
 							try {
@@ -115,32 +116,20 @@ public class ClientHandler {
 							}
 							
 						}
-					} else {
-						
-						dataOut.writeInt(DataHandler.getAllPlayers().size());
 						
 						updateData();
 						
-						for (int i : DataHandler.getAllPlayers().keySet()) {
-	
-							StringBuilder sb = new StringBuilder();
-							sb.append("Sending X coordinate: ");
-							sb.append(DataHandler.getPlayer(i).getX());
-							LogHandler.writeClient(sb.toString(), client);
-
-							dataOut.writeInt(DataHandler.getPlayer(i).getX());
-
-							StringBuilder sb2 = new StringBuilder();
-							sb2.append("Sending Y coordinate: ");
-							sb2.append(DataHandler.getPlayer(i).getY());
-							LogHandler.writeClient(sb2.toString(), client);
-
-							dataOut.writeInt(DataHandler.getPlayer(i).getY());
-							
-						}
+						sendData();
+						
+					} else {
+						
+						updateData();
+						
+						sendData();
+						
 					}
 					
-				} catch (IOException e1) {
+				} catch (Exception e1) {
 					DataHandler.removePlayer(player);
 					closeAll();
 					LogHandler.writeClient("Client disconnected", client);
@@ -261,6 +250,38 @@ public class ClientHandler {
 	private boolean twoTimersRunning() {
 		
 		return ((leftMove.isRunning() && (upMove.isRunning() || downMove.isRunning())) || (rightMove.isRunning() && (upMove.isRunning() || downMove.isRunning())));
+		
+	}
+	
+	private void sendData() {
+		
+		try {
+			
+			dataOut.writeInt(DataHandler.getAllPlayers().size());
+			
+			for (int i : DataHandler.getAllPlayers().keySet()) {
+				
+				StringBuilder sb = new StringBuilder();
+				sb.append("Sending X coordinate: ");
+				sb.append(DataHandler.getPlayer(i).getX());
+				LogHandler.writeClient(sb.toString(), client);
+	
+				dataOut.writeInt(DataHandler.getPlayer(i).getX());
+	
+				StringBuilder sb2 = new StringBuilder();
+				sb2.append("Sending Y coordinate: ");
+				sb2.append(DataHandler.getPlayer(i).getY());
+				LogHandler.writeClient(sb2.toString(), client);
+	
+				dataOut.writeInt(DataHandler.getPlayer(i).getY());
+				
+			}
+		
+		} catch(Exception e) {
+			
+			e.printStackTrace();
+			
+		}
 		
 	}
 	

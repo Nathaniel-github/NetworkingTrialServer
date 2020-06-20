@@ -36,6 +36,7 @@ public class DataHandler {
 		synchronized(syncObj) {
 			syncObj.notifyAll();
 		}	
+		
 	}
 	
 	public static PlayerMap getAllPlayers() {
